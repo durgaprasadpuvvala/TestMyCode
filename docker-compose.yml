@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    image: prasad00015/testmycode:latest
+    ports:
+      - "5000:3000"
+    # Remove depends_on: db for production/Render as the DB is external
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - PORT=3000
+    restart: always
+
+  # Keep this only for LOCAL testing. 
+  # Render will provide its own managed MySQL instance.
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: coding_exam
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elite Coding Exam Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css">
+
+    <style>
+        :root {
+            --primary: #06b6d4;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --bg-dark: #020617;
+            --glass: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f1f5f9;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        .top-bar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .timer-badge {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 8px 18px;
+            border-radius: 99px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+        }
+
+        /* --- Layout --- */
+        .exam-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1700px;
+            margin: auto;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .glass-box {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        /* --- Problem Styling --- */
+        #questionNumber {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        #questionTitle {
+            margin: 0 0 15px 0;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #questionDesc {
+            color: #94a3b8;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        /* --- Editor --- */
+        #editor-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .CodeMirror {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            height: 500px !important;
+        }
+
+        /* --- Controls --- */
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        select {
+            background: #1e293b;
+            color: white;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-run {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--border);
+        }
+
+        .btn-run:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-finish {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-finish:hover { background: var(--danger); color: white; }
+
+        /* --- Results --- */
+        .result-item {
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div id="studentDisplay" style="font-weight: 700; color: var(--primary);">Loading Student...</div>
+    <div class="timer-badge" id="timerDisplay">⏱ 60:00</div>
+    <div style="font-size: 0.8rem; font-weight: 600; color: #64748b;">PREMIUM EXAMINATION MODULE</div>
+</div>
+
+<div class="exam-container">
+    <div class="panel">
+        <div class="glass-box">
+            <div class="header-row" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <div id="questionNumber">Program 1</div>
+                    <h1 id="questionTitle">Loading...</h1>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="prevQuestion()" class="btn btn-run" style="padding: 8px 12px;">❮</button>
+                    <button onclick="nextQuestion()" class="btn btn-run" style="padding: 8px 12px;">❯</button>
+                </div>
+            </div>
+            <p id="questionDesc"></p>
+        </div>
+
+        <div class="glass-box">
+            <h3 style="margin:0 0 15px 0; font-size: 0.9rem; color: #94a3b8;">SAMPLE TEST CASE</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="font-size: 0.7rem; color: #64748b; font-weight: 800;">INPUT</label>
+                    <pre id="sampleInput"></pre>
+                </div>
+                <div>
+                    <label style="font-size: 0.7rem; color: #64748b; font-weight: 800;">OUTPUT</label>
+                    <pre id="sampleOutput"></pre>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="endExam()" class="btn btn-finish">Finalize and Submit Exam</button>
+    </div>
+
+    <div class="panel">
+        <div class="control-row">
+            <select id="language" onchange="updateEditorMode()">
+                <option value="python">Python 3</option>
+                <option value="java">Java 17</option>
+                <option value="c">C (GCC)</option>
+            </select>
+            <button class="btn btn-submit" onclick="submitExam()">Submit Code 🚀</button>
+        </div>
+
+        <div id="editor-container"></div>
+
+        <div class="glass-box" style="padding: 15px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn btn-run" onclick="runDefault()">Run Tests</button>
+                <textarea id="customInput" placeholder="Custom input..." style="flex:1; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; color: white; padding: 10px; height: 45px; resize: none;"></textarea>
+            </div>
+        </div>
+
+        <div id="testCaseResults" class="glass-box" style="display: none;">
+            <h3 style="margin: 0 0 10px 0; font-size: 0.9rem;">Console Output</h3>
+            <div id="testCaseList"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+
+<script>
+    // Security: Anti-Cheating
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
+
+    let questions = [];
+    let currentIndex = 0;
+    let editor;
+    let timeLeft = 3600;
+
+    const codeTemplates = {
+        python: "def main():\n    # Write your code here\n    input_data = input()\n    print(input_data)\n\nif __name__ == '__main__':\n    main()",
+        java: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Your code here\n    }\n}",
+        c: "#include <stdio.h>\n\nint main() {\n    // Your code here\n    return 0;\n}"
+    };
+
+    window.onload = function () {
+        editor = CodeMirror(document.getElementById("editor-container"), {
+            lineNumbers: true,
+            theme: "dracula",
+            mode: "python",
+            indentUnit: 4,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            extraKeys: { "Ctrl-Space": "autocomplete" }
+        });
+        
+        startTimer();
+        loadQuestions();
+        
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById("studentDisplay").innerText = `Candidate: ${params.get("user") || "Student"} (#${params.get("id") || "N/A"})`;
+    };
+
+    function startTimer() {
+        const timerEl = document.getElementById("timerDisplay");
+        const interval = setInterval(() => {
+            timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            timerEl.innerText = `⏱ ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            
+            if(timeLeft < 300) { // Urgent red glow
+                timerEl.style.color = "#ff4d4d";
+                timerEl.style.boxShadow = "0 0 20px rgba(255, 77, 77, 0.3)";
+            }
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                endExam();
+            }
+        }, 1000);
+    }
+
+    // Reuse your existing loadQuestions, displayQuestion, runDefault logic here
+    // Updated runDefault feedback UI:
+    function runDefault() {
+        // ... (existing fetch logic)
+        // Inside your .then(data => {
+        const resultsBox = document.getElementById("testCaseResults");
+        const list = document.getElementById("testCaseList");
+        resultsBox.style.display = "block";
+        list.innerHTML = "";
+
+        data.results.forEach((res, i) => {
+            const div = document.createElement("div");
+            div.className = "result-item";
+            const passed = res.passed;
+            div.style.background = passed ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)";
+            div.style.border = `1px solid ${passed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`;
+            div.innerHTML = `
+                <span style="color: ${passed ? '#10b981' : '#ef4444'}; font-weight:700;">Test Case ${i+1}</span>
+                <span style="font-size: 0.7rem; background: ${passed ? '#10b981' : '#ef4444'}; color: #000; padding: 2px 8px; border-radius: 4px;">${passed ? 'PASSED' : 'FAILED'}</span>
+            `;
+            list.appendChild(div);
+        });
+    }
+    
+    // ... rest of your navigation functions (prev/next/submit/save)
+</script>
+</body>
+</html>

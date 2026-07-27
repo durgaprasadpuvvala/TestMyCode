@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Exam - Secure Portal</title>
+    <link rel="stylesheet" href="css/common.css">
+    
+    <!-- CodeMirror Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css">
+
+    <!-- CodeMirror Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/anyword-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/python-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js"></script>
+
+    <style>
+        /* Base Page Security Rules */
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Top Header Navigation */
+        .top-bar {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .timer-badge {
+            background: #1e293b;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #38bdf8;
+            border: 1px solid #334155;
+        }
+
+        /* Layout Structure */
+        .exam-container { display: flex; gap: 20px; padding: 20px; min-height: 88vh; }
+        .left-panel { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .right-panel { flex: 1.2; display: flex; flex-direction: column; gap: 15px; }
+        .box { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Code Editor Container */
+        #editor-container { border: 1px solid #ddd; border-radius: 4px; overflow: hidden; font-size: 14px; }
+        
+        /* Buttons */
+        .btn-blue { background: #0056b3; color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-submit { background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; font-weight: bold; border: none; cursor: pointer; }
+        
+        /* Navigation Palette */
+        .nav-btn {
+            padding: 6px 14px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: #e2e8f0; }
+        .q-pill {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .q-pill.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        .q-pill.submitted {
+            background: #16a34a;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        /* Fullscreen Overlay Prompt */
+        #fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            text-align: center;
+        }
+        #fullscreen-overlay button {
+            margin-top: 20px;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Toast Notification */
+        #security-toast {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        /* Test Result Pre Block Styling */
+        .output-box-pre {
+            margin-top: 4px;
+            font-family: 'Courier New', monospace;
+            background: #ffffff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 24px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Fullscreen Overlay -->
+<div id="fullscreen-overlay">
+    <h2>🔒 Secure Assessment Mode Required</h2>
+    <p>This exam must be taken in Fullscreen Mode. Leaving fullscreen or switching tabs will be recorded as a violation.</p>
+    <button onclick="enterFullScreen()">Enter Fullscreen & Start Exam</button>
+</div>
+
+<!-- Non-blocking Toast Notification -->
+<div id="security-toast">⚠️ Security Warning!</div>
+
+<div class="top-bar">
+    <div id="studentDisplay" style="font-weight: 500;">Loading...</div>
+    <div class="timer-badge" id="timerDisplay">60:00</div>
+    <div style="font-size: 0.9rem; opacity: 0.8;">Test My Code..</div>
+</div>
+
+<div class="exam-container">
+    <!-- LEFT PANEL: Question Details & Test Cases -->
+    <div class="left-panel">
+        <div class="box">
+            <!-- Navigation Header Bar -->
+            <div class="header-row" style="border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h2 id="questionNumber" style="margin:0; font-size: 1.1rem; color: #64748b;">Program 1</h2>
+                </div>
+                <!-- Direct Navigation Buttons -->
+                <div id="questionPalette" style="display: flex; gap: 6px;"></div>
+                <div>
+                    <button class="nav-btn" onclick="prevQuestion()">❮ Prev</button>
+                    <button class="nav-btn" onclick="nextQuestion()">Next ❯</button>
+                </div>
+            </div>
+
+            <h1 id="questionTitle" style="margin: 0 0 10px 0; font-size: 1.6rem; color: #1e293b;">Loading Title...</h1>
+            <p id="questionDesc" style="color: #475569; line-height: 1.6; font-size: 1rem; margin-top: 0;"></p>
+        </div>
+
+        <div class="box">
+            <span class="code-title" style="font-weight: bold; color: #0f172a; display: block; margin-bottom: 10px;">Sample Test Case</span>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 6px;">
+                    <strong style="font-size: 0.8rem; color: #64748b; text-transform: uppercase;">Input</strong>
+                    <pre id="sampleInput" style="margin-top: 5px; font-family: 'Courier New', monospace;"></pre>
+                </div>
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 6px;">
+                    <strong style="font-size: 0.8rem; color: #64748b; text-transform: uppercase;">Output</strong>
+                    <pre id="sampleOutput" style="margin-top: 5px; font-family: 'Courier New', monospace;"></pre>
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="endExam()" style="width:100%; padding:12px; background:#64748b; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition: background 0.3s;">Final Finish Exam</button>
+    </div>
+
+    <!-- RIGHT PANEL: Code Editor & Execution -->
+    <div class="right-panel">
+        <div class="header-row" style="margin-bottom: 15px; display:flex; justify-content: space-between;">
+            <select id="language" style="padding: 8px 15px; border-radius: 8px; border: 1px solid #ccc; font-weight: 600;" onchange="updateEditorMode()">
+                <option value="python">Python 3</option>
+                <option value="java">Java 17</option>
+                <option value="c">C (GCC)</option>
+            </select>
+            <button class="btn-submit" onclick="submitExam()">Submit Code ▶</button>
+        </div>
+
+        <div id="editor-container"></div>
+
+        <div class="box" style="margin-top: 15px;">
+            <div style="display:flex; gap:10px;">
+                <button class="btn-blue" onclick="runDefault()" style="background:#0f172a; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer;">Run Test Cases</button>
+                <textarea id="customInput" placeholder="Enter custom input here..." style="flex:1; border-radius:8px; border:1px solid #ccc; padding:8px; height:40px; resize:none;"></textarea>
+            </div>
+        </div>
+
+        <div id="testCaseResults" class="box" style="display:none; margin-top: 15px;">
+            <h3 style="margin-top:0; font-size: 1rem; color: #1e293b; border-bottom: 1px solid #eee; padding-bottom: 8px;">Execution Results</h3>
+            <div id="testCaseList" style="max-height: 250px; overflow-y: auto;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- SECURITY & PROCTORING SCRIPT -->
+<script>
+    let violationCount = 0;
+    const MAX_VIOLATIONS = 3;
+    let examSubmittedAutomatically = false;
+
+    // 1. Disable Right Click, Copy, Cut, Paste, Selection
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+
+    // 2. Prevent DevTools Shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === "F12" || 
+            (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) ||
+            (e.ctrlKey && ['U', 'u', 'S', 's', 'P', 'p'].includes(e.key))
+        ) {
+            e.preventDefault();
+            triggerViolation("Attempted to access DevTools or System Shortcuts.");
+        }
+    });
+
+    // 3. FULLSCREEN CONTROL
+    function enterFullScreen() {
+        let elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("msfullscreenchange", handleFullscreenChange);
+
+    function handleFullscreenChange() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+            document.getElementById("fullscreen-overlay").style.display = "none";
+        } else {
+            document.getElementById("fullscreen-overlay").style.display = "flex";
+            if (!examSubmittedAutomatically) {
+                triggerViolation("Exited Fullscreen mode!");
+            }
+        }
+    }
+
+    // 4. TAB SWITCH DETECTION
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden && !examSubmittedAutomatically) {
+            triggerViolation("Switched browser tabs or minimized window!");
+        }
+    });
+
+    // 5. TOAST NOTIFICATION FOR VIOLATIONS
+    function triggerViolation(reason) {
+        if (examSubmittedAutomatically) return;
+        
+        violationCount++;
+        let remainingAttempts = MAX_VIOLATIONS - violationCount;
+
+        const toast = document.getElementById("security-toast");
+
+        if (violationCount >= MAX_VIOLATIONS) {
+            examSubmittedAutomatically = true;
+            toast.innerText = `🚨 EXAM TERMINATED! Exceeded violation limit. Submitting...`;
+            toast.style.display = "block";
+            
+            setTimeout(() => {
+                forceAutoSubmitExam();
+            }, 2000);
+        } else {
+            toast.innerText = `⚠️ Security Warning (${violationCount}/${MAX_VIOLATIONS}): ${reason}`;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 4000);
+        }
+    }
+
+    // 6. AUTO SUBMIT EXAM ON VIOLATION EXCEEDED
+    function forceAutoSubmitExam() {
+        const code = editor ? editor.getValue() : "";
+        const language = document.getElementById("language") ? document.getElementById("language").value : "python";
+        const currentQuestion = questions[currentIndex] || { id: 0 };
+        const params = new URLSearchParams(window.location.search);
+        const sId = params.get("id");
+
+        fetch("/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                code: code,
+                language: language,
+                questionId: currentQuestion.id,
+                username: sId,
+                timeSpent: 3600 - timeLeft
+            })
+        })
+        .finally(() => {
+            localStorage.removeItem("exam_progress");
+            window.location.href = "index.html";
+        });
+    }
+</script>
+
+<!-- EXAM APPLICATION LOGIC -->
+<script>
+    let questions = [];
+    let currentIndex = 0;
+    let editor;
+    let timeLeft = 3600;
+    let submittedQuestionsList = [];
+
+    const codeTemplates = {
+        python: "def main():\n    # Your code here\n    pass\n\nif __name__ == '__main__':\n    main()",
+        java: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n    }\n}",
+        c: "#include <stdio.h>\n\nint main() {\n    return 0;\n}"
+    };
+
+    window.onload = function () {
+        editor = CodeMirror(document.getElementById("editor-container"), {
+            lineNumbers: true,
+            theme: "dracula",
+            mode: "python",
+            indentUnit: 4,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            extraKeys: { "Ctrl-Space": "autocomplete" },
+            indentWithTabs: false,
+            smartIndent: true
+        });
+        editor.setSize("100%", "450px");
+
+        editor.on("inputRead", function(cm, change) {
+            if (change.text[0].match(/[a-z]/i)) {
+                cm.showHint({
+                    completeSingle: false,
+                    hint: CodeMirror.hint.python || CodeMirror.hint.anyword
+                });
+            }
+        });
+        
+        startTimer();
+
+        const params = new URLSearchParams(window.location.search);
+        const studentName = params.get("user") || "Student";
+        const studentId = params.get("id") || "N/A";
+        document.getElementById("studentDisplay").innerText = `${studentName} (${studentId})`;
+
+        if (studentId !== "N/A") {
+            fetch(`/user-submissions/${studentId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        submittedQuestionsList = data.submittedQuestions;
+                    }
+                    loadQuestions();
+                })
+                .catch(() => loadQuestions());
+        } else {
+            loadQuestions();
+        }
+    };
+
+    function startTimer() {
+        setInterval(() => {
+            timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById("timerDisplay").innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) {
+                forceAutoSubmitExam();
+            }
+        }, 1000);
+    }
+
+    function loadQuestions() {
+        fetch("/questions")
+            .then(res => res.json())
+            .then(data => {
+                questions = data;
+                renderPalette();
+                displayQuestion();
+            });
+    }
+
+    // Question number pills [1] [2] [3] [4]
+    function renderPalette() {
+        const palette = document.getElementById("questionPalette");
+        palette.innerHTML = "";
+        questions.forEach((q, idx) => {
+            const btn = document.createElement("button");
+            btn.className = `q-pill ${idx === currentIndex ? 'active' : ''} ${submittedQuestionsList.includes(q.id) ? 'submitted' : ''}`;
+            btn.innerText = idx + 1;
+            btn.onclick = () => goToQuestion(idx);
+            palette.appendChild(btn);
+        });
+    }
+
+    function goToQuestion(index) {
+        if (index >= 0 && index < questions.length) {
+            saveProgress();
+            currentIndex = index;
+            renderPalette();
+            displayQuestion();
+        }
+    }
+
+    function displayQuestion() {
+        let q = questions[currentIndex];
+        if (!q) return;
+        
+        document.getElementById("questionNumber").innerText = `Program ${currentIndex + 1} / ${questions.length}`;
+        document.getElementById("questionTitle").innerText = q.title; 
+        document.getElementById("questionDesc").innerText = q.description; 
+
+        if (q.test_cases && q.test_cases.length > 0) {
+            const firstCase = q.test_cases[0]; 
+            document.getElementById("sampleInput").innerText = firstCase.input;
+            document.getElementById("sampleOutput").innerText = firstCase.output;
+        } else {
+            document.getElementById("sampleInput").innerText = "None";
+            document.getElementById("sampleOutput").innerText = "None";
+        }
+        
+        let progress = JSON.parse(localStorage.getItem("exam_progress") || "{}");
+        if (progress[currentIndex]) {
+            editor.setValue(progress[currentIndex]);
+        } else {
+            const lang = document.getElementById("language").value;
+            editor.setValue(codeTemplates[lang] || "");
+        }
+
+        document.getElementById("testCaseResults").style.display = "none";
+
+        const submitBtn = document.querySelector(".btn-submit");
+        const runBtn = document.querySelector(".btn-blue");
+
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Code ▶";
+        submitBtn.style.background = "#007bff";
+        submitBtn.style.cursor = "pointer";
+
+        runBtn.disabled = false;
+        runBtn.style.background = "#0f172a";
+        runBtn.style.cursor = "pointer";
+
+        editor.setOption("readOnly", false);
+        
+        renderPalette();
+    }
+
+    // UPDATED FEATURE: Shows "Expected Output" and "Your Output" side-by-side for each test case
+    function runDefault() {
+        const code = editor.getValue();
+        const language = document.getElementById("language").value;
+        const currentQuestion = questions[currentIndex];
+
+        const runBtn = document.querySelector(".btn-blue");
+        const testResultsBox = document.getElementById("testCaseResults");
+        const testCaseList = document.getElementById("testCaseList");
+
+        runBtn.innerText = "⌛ Executing...";
+        runBtn.disabled = true;
+        testResultsBox.style.display = "block";
+        testCaseList.innerHTML = "<p style='color: #64748b; font-size: 0.9rem;'>Running code against test cases...</p>";
+
+        fetch("/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                code: code,
+                language: language,
+                questionId: currentQuestion.id
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            runBtn.innerText = "Run Test Cases";
+            runBtn.disabled = false;
+            testCaseList.innerHTML = "";
+
+            if (data.results && data.results.length > 0) {
+                data.results.forEach((res, index) => {
+                    const card = document.createElement("div");
+                    card.style.padding = "12px";
+                    card.style.borderRadius = "8px";
+                    card.style.marginBottom = "10px";
+                    card.style.fontSize = "0.9rem";
+                    
+                    if (res.passed) {
+                        card.style.background = "#f0fdf4";
+                        card.style.border = "1px solid #bbf7d0";
+                    } else {
+                        card.style.background = "#fef2f2";
+                        card.style.border = "1px solid #fecaca";
+                    }
+
+                    const badgeHtml = res.passed 
+                        ? `<span style="background: #166534; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">✔ PASSED</span>`
+                        : `<span style="background: #991b1b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">✘ FAILED</span>`;
+
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: #1e293b;">Test Case ${index + 1}</strong>
+                            ${badgeHtml}
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <strong style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Expected Output:</strong>
+                                <pre class="output-box-pre" style="color: #166534;">${res.expected || "None"}</pre>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Your Output:</strong>
+                                <pre class="output-box-pre" style="color: ${res.passed ? '#166534' : '#991b1b'};">${res.output || "None"}</pre>
+                            </div>
+                        </div>
+                    `;
+                    testCaseList.appendChild(card);
+                });
+            } else {
+                testCaseList.innerHTML = "<div style='color: #e11d48; padding: 10px;'>No results returned. Check if the code has compilation errors.</div>";
+            }
+        })
+        .catch(err => {
+            runBtn.innerText = "Run Test Cases";
+            runBtn.disabled = false;
+            testCaseList.innerHTML = `<div style='color: #e11d48;'>Server Connection Error: ${err.message}</div>`;
+        });
+    }
+
+    function submitExam() {
+        const code = editor.getValue();
+        const language = document.getElementById("language").value;
+        const currentQuestion = questions[currentIndex];
+        const params = new URLSearchParams(window.location.search);
+        const sId = params.get("id");
+
+        const submitBtn = document.querySelector(".btn-submit");
+        const originalText = submitBtn.innerText;
+        
+        submitBtn.innerText = "Submitting...";
+        submitBtn.disabled = true;
+
+        fetch("/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                code: code,
+                language: language,
+                questionId: currentQuestion.id,
+                username: sId,
+                timeSpent: 3600 - timeLeft
+            })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Server responded with " + res.status);
+            return res.json();
+        })
+        .then(data => {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+            
+            if (data.success) {
+                if (!submittedQuestionsList.includes(currentQuestion.id)) {
+                    submittedQuestionsList.push(currentQuestion.id);
+                }
+
+                if (currentIndex < questions.length - 1) {
+                    nextQuestion(); 
+                } else {
+                    displayQuestion();
+                }
+            }
+        })
+        .catch(err => {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+            console.error("Submission Error:", err);
+        });
+    }
+
+    function endExam() {
+        localStorage.removeItem("exam_progress");
+        window.location.href = "index.html";
+    }
+
+    function saveProgress() {
+        let progress = JSON.parse(localStorage.getItem("exam_progress") || "{}");
+        progress[currentIndex] = editor.getValue();
+        localStorage.setItem("exam_progress", JSON.stringify(progress));
+    }
+
+    function nextQuestion() {
+        if (currentIndex < questions.length - 1) {
+            goToQuestion(currentIndex + 1);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            goToQuestion(currentIndex - 1);
+        }
+    }
+
+    function updateEditorMode() {
+        const lang = document.getElementById("language").value;
+        editor.setOption("mode", lang === "python" ? "python" : "text/x-csrc");
+        editor.setValue(codeTemplates[lang]);
+    }
+</script>
+
+</body>
+</html>

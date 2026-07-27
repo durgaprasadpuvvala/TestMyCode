@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: #0f172a;
+            color: white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            width: 240px;
+            height: 100%;
+            background: #020617;
+            padding-top: 20px;
+            border-right: 1px solid #1e293b;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: #38bdf8;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 85%;
+            margin: 10px auto;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .sidebar button:hover {
+            background: #1e293b;
+            color: #38bdf8;
+            padding-left: 20px;
+        }
+
+        .sidebar button.active {
+            background: #38bdf8;
+            color: #020617;
+            font-weight: bold;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 240px;
+            padding: 40px;
+        }
+
+        /* Dashboard Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        .card h3 {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #38bdf8;
+            margin: 10px 0 0 0;
+        }
+
+        /* Panels */
+        .panel {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none; /* Hidden by default */
+            animation: fade 0.4s ease-out;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Elements */
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        button.action {
+            padding: 12px 24px;
+            border: none;
+            background: #38bdf8;
+            color: #020617;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button.action:hover {
+            background: #7dd3fc;
+            transform: translateY(-2px);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th { color: #38bdf8; font-weight: 600; }
+        tr:hover { background: rgba(56, 189, 248, 0.05); }
+
+        .student {
+            background: #020617;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="show('dashboard')" id="btn-dashboard" class="active">Dashboard</button>
+    <button onclick="show('addQuestion')" id="btn-addQuestion">Add Question</button>
+    <button onclick="show('editQuestion')" id="btn-editQuestion">Edit Question</button>
+    <button onclick="show('recentQuestions')" id="btn-recentQuestions">Recent Questions</button>
+    <button onclick="show('submissions')" id="btn-submissions">Submissions</button>
+    <button onclick="show('analytics')" id="btn-analytics">Analytics</button>
+    <button onclick="show('monitor')" id="btn-monitor">Student Monitor</button>
+</div>
+
+<div class="main">
+
+    <div id="dashboard" class="panel" style="display: block;">
+        <h2>Overview</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Total Students</h3>
+                <p id="totalStudents">0</p>
+            </div>
+            <div class="card">
+                <h3>Total Submissions</h3>
+                <p id="totalSubs">0</p>
+            </div>
+            <div class="card">
+                <h3>Total Questions</h3>
+                <p id="totalQ">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="recentQuestions" class="panel">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <h2>Recent Questions</h2>
+            <button class="action" onclick="loadRecentQuestions()">Refresh List</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="recentTable"></tbody>
+        </table>
+    </div>
+
+    <div id="addQuestion" class="panel">
+        <h2>Add New Question</h2>
+        <input id="q_title" placeholder="Title (e.g., Perfect Number)">
+        <textarea id="q_desc" rows="3" placeholder="Question Description"></textarea>
+        
+        <h3 style="color: #38bdf8; font-size: 1rem; margin-top: 10px;">Test Cases (Must match exactly)</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #020617; padding: 15px; border-radius: 8px;">
+            <div>
+                <label>Input 1</label>
+                <textarea id="in1" placeholder="e.g. 6" style="margin-bottom: 5px;"></textarea>
+                <label>Output 1</label>
+                <textarea id="out1" placeholder="e.g. True"></textarea>
+            </div>
+            <div>
+                <label>Input 2</label>
+                <textarea id="in2" placeholder="e.g. 28" style="margin-bottom: 5px;"></textarea>
+                <label>Output 2</label>
+                <textarea id="out2" placeholder="e.g. True"></textarea>
+            </div>
+            <div style="grid-column: span 2;">
+                <label>Input 3</label>
+                <textarea id="in3" placeholder="e.g. 12" style="margin-bottom: 5px;"></textarea>
+                <label>Output 3</label>
+                <textarea id="out3" placeholder="e.g. False"></textarea>
+            </div>
+        </div>
+        
+        <button class="action" style="margin-top: 20px;" onclick="addQuestion()">Save Question with 3 Tests</button>
+    </div>
+
+    <div id="editQuestion" class="panel">
+        <h2>Modify Question</h2>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input id="edit_qid" placeholder="Enter Question ID to Edit" style="margin-bottom: 0;">
+            <button class="action" style="height: 42px; white-space: nowrap;" onclick="fetchQuestionToEdit()">Fetch Details</button>
+        </div>
+
+        <input id="edit_title" placeholder="Updated Title" style="margin-top: 20px;">
+        <textarea id="edit_desc" rows="3" placeholder="Updated Description"></textarea>
+
+        <h3 style="color: #38bdf8; font-size: 1rem; margin-top: 10px;">Edit Test Cases</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #020617; padding: 15px; border-radius: 8px;">
+            <div>
+                <label>Input 1</label>
+                <textarea id="edit_in1" style="margin-bottom: 5px;"></textarea>
+                <label>Output 1</label>
+                <textarea id="edit_out1"></textarea>
+            </div>
+            <div>
+                <label>Input 2</label>
+                <textarea id="edit_in2" style="margin-bottom: 5px;"></textarea>
+                <label>Output 2</label>
+                <textarea id="edit_out2"></textarea>
+            </div>
+            <div style="grid-column: span 2;">
+                <label>Input 3</label>
+                <textarea id="edit_in3" style="margin-bottom: 5px;"></textarea>
+                <label>Output 3</label>
+                <textarea id="edit_out3"></textarea>
+            </div>
+        </div>
+
+        <button class="action" style="margin-top: 20px;" onclick="editQuestion()">Update Question</button>
+    </div>
+
+    <div id="submissions" class="panel">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <h2>Student Submissions</h2>
+            <button class="action" onclick="loadSubmissions()">Refresh Submissions</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Question ID</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="subsTable"></tbody>
+        </table>
+    </div>
+
+    <div id="analytics" class="panel">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <h2>Result Analytics</h2>
+            <div>
+                <button class="action" onclick="loadAnalytics()">Refresh Data</button>
+                <button class="action" style="background: #22c55e;" onclick="downloadExcel()">Download Excel (CSV) 📥</button>
+                <button class="action" style="background: #ef4444; margin-left: 10px;" onclick="clearAllResults()">Clear All Results 🗑️</button>
+            </div>
+        </div>
+        <div id="analyticsData" style="margin-top:20px;"></div>
+    </div>
+
+    <div id="monitor" class="panel">
+        <h2>Live Student Monitoring</h2>
+        <button class="action" onclick="loadStudents()">Refresh Live View</button>
+        <div id="studentsList" style="margin-top:20px;"></div>
+    </div>
+
+</div>
+
+<script>
+    // Navigation logic
+    function show(sectionId) {
+        const panels = document.querySelectorAll('.panel');
+        panels.forEach(p => p.style.display = 'none');
+
+        const buttons = document.querySelectorAll('.sidebar button');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        document.getElementById(sectionId).style.display = 'block';
+        document.getElementById('btn-' + sectionId).classList.add('active');
+
+        if(sectionId === 'dashboard') updateStats();
+        if(sectionId === 'recentQuestions') loadRecentQuestions();
+        if(sectionId === 'analytics') loadAnalytics();
+    }
+
+    function updateStats() {
+        fetch("/questions")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('totalQ').innerText = data.length;
+            })
+            .catch(e => console.log("Stats fetch error"));
+    }
+
+    function addQuestion() {
+        const testCases = [
+            { input: document.getElementById("in1").value.trim(), output: document.getElementById("out1").value.trim() },
+            { input: document.getElementById("in2").value.trim(), output: document.getElementById("out2").value.trim() },
+            { input: document.getElementById("in3").value.trim(), output: document.getElementById("out3").value.trim() }
+        ];
+
+        const payload = {
+            title: document.getElementById("q_title").value,
+            description: document.getElementById("q_desc").value,
+            test_cases: testCases
+        };
+
+        if(!payload.title || !payload.description || !testCases[0].input || !testCases[0].output) {
+            alert("Title, Description, and at least the first Test Case are required!");
+            return;
+        }
+
+        fetch("/add-question", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Question & 3 Test Cases Saved Successfully");
+                
+                ["q_title", "q_desc", "in1", "out1", "in2", "out2", "in3", "out3"].forEach(id => {
+                    document.getElementById(id).value = "";
+                });
+                
+                updateStats();
+                show('recentQuestions');
+            } else {
+                alert("Error: " + (data.error || "Server Error"));
+            }
+        })
+        .catch(err => console.error("Fetch error:", err));
+    }
+
+   function fetchQuestionToEdit() {
+    const qid = document.getElementById("edit_qid").value.trim();
+    if (!qid) return alert("Please enter a Question ID!");
+
+    fetch(`/questions/${qid}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`Server returned status ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (!data || !data.id) return alert("Question not found!");
+
+            document.getElementById("edit_title").value = data.title || "";
+            document.getElementById("edit_desc").value = data.description || "";
+
+            let tc = typeof data.test_cases === 'string' ? JSON.parse(data.test_cases) : data.test_cases;
+
+            if (tc && tc.length >= 1) {
+                document.getElementById("edit_in1").value = tc[0].input || "";
+                document.getElementById("edit_out1").value = tc[0].output || "";
+            }
+            if (tc && tc.length >= 2) {
+                document.getElementById("edit_in2").value = tc[1].input || "";
+                document.getElementById("edit_out2").value = tc[1].output || "";
+            }
+            if (tc && tc.length >= 3) {
+                document.getElementById("edit_in3").value = tc[2].input || "";
+                document.getElementById("edit_out3").value = tc[2].output || "";
+            }
+        })
+        .catch(err => {
+            console.error("Fetch question error:", err);
+            alert(`Error fetching question details: ${err.message}`);
+        });
+}
+
+    function editQuestion() {
+        const qid = document.getElementById("edit_qid").value.trim();
+        if (!qid) return alert("Please enter Question ID!");
+
+        const testCases = [
+            { input: document.getElementById("edit_in1").value.trim(), output: document.getElementById("edit_out1").value.trim() },
+            { input: document.getElementById("edit_in2").value.trim(), output: document.getElementById("edit_out2").value.trim() },
+            { input: document.getElementById("edit_in3").value.trim(), output: document.getElementById("edit_out3").value.trim() }
+        ];
+
+        const payload = {
+            title: document.getElementById("edit_title").value,
+            description: document.getElementById("edit_desc").value,
+            test_cases: testCases
+        };
+
+        fetch(`/edit-question/${qid}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Question & Test Cases updated successfully!");
+                show('recentQuestions');
+            } else {
+                alert("Error: " + data.error);
+            }
+        })
+        .catch(err => console.error("Edit fetch error:", err));
+    }
+
+    function loadRecentQuestions() {
+        fetch("/questions")
+            .then(res => res.json())
+            .then(data => {
+                let html = "";
+                data.slice().reverse().forEach(q => {
+                    html += `
+                    <tr>
+                        <td>${q.id}</td>
+                        <td>${q.title}</td>
+                        <td>${q.description.substring(0, 50)}${q.description.length > 50 ? '...' : ''}</td>
+                        <td>
+                            <button class="action" style="background: #38bdf8; color: #020617; padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;" 
+                                    onclick="document.getElementById('edit_qid').value='${q.id}'; show('editQuestion'); fetchQuestionToEdit();">
+                                Edit
+                            </button>
+                            <button class="action" style="background: #ef4444; padding: 5px 10px; font-size: 0.8rem;" 
+                                    onclick="deleteQuestion(${q.id})">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById("recentTable").innerHTML = html;
+            });
+    }
+
+    function deleteQuestion(id) {
+        if (!confirm("Are you sure you want to delete Question ID: " + id + "?")) return;
+
+        fetch(`/delete-question/${id}`, { method: "DELETE" })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Question deleted!");
+                    loadRecentQuestions();
+                    updateStats();
+                } else {
+                    alert("Error deleting question: " + data.error);
+                }
+            })
+            .catch(err => {
+                console.error("Delete fetch error:", err);
+                alert("Failed to connect to backend server.");
+            });
+    }
+
+    function loadAnalytics() {
+        const displayArea = document.getElementById("analyticsData");
+        displayArea.innerHTML = "<p>Loading student results...</p>";
+
+        fetch("/analytics")
+            .then(res => {
+                if (!res.ok) throw new Error('Database Error');
+                return res.json();
+            })
+            .then(data => {
+                if (!data || data.length === 0) {
+                    displayArea.innerHTML = "<p>No results found.</p>";
+                    return;
+                }
+
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Course</th>
+                                <th>Attempts</th>
+                                <th>Total Score</th>
+                                <th>Time Spent</th>
+                                <th>Last Submission</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                data.forEach((row, index) => {
+                    const dateObj = new Date(row.last_submitted);
+                    const formattedDate = dateObj.toLocaleDateString() + ", " + 
+                                          dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    // Cap time spent at 3600 seconds (60 mins max for the exam)
+                    const rawSecs = row.total_seconds || 0;
+                    const totalSecs = Math.min(rawSecs, 3600); 
+
+                    const mins = Math.floor(totalSecs / 60);
+                    const secs = totalSecs % 60;
+                    const timeDisplay = `${mins}m ${secs < 10 ? '0' : ''}${secs}s`;
+
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td style="color: #38bdf8; font-weight: bold;">${row.student_id}</td>
+                            <td style="text-transform: capitalize;">${row.student_name}</td>
+                            <td style="color: #a855f7; font-weight: 600;">${row.student_course}</td> 
+                            <td>${row.total_attempts}</td> 
+                            <td style="color: #22c55e; font-weight: bold;">${row.total_score}</td>
+                            <td><span style="color: #fbbf24; font-weight: bold;">⏱ ${timeDisplay}</span></td>
+                            <td style="color: #94a3b8; font-size: 0.9rem;">${formattedDate}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                displayArea.innerHTML = html;
+            })
+            .catch(err => {
+                displayArea.innerHTML = `<p style="color: #ef4444;">Error loading data: ${err.message}</p>`;
+            });
+    }
+
+    function downloadExcel() {
+        const table = document.querySelector("#analyticsData table");
+        if (!table) {
+            alert("Please click 'Refresh Data' first to load the results!");
+            return;
+        }
+
+        let csv = [];
+        const rows = table.querySelectorAll("tr");
+        const BOM = "\uFEFF";
+        
+        for (let i = 0; i < rows.length; i++) {
+            const row = [];
+            const cols = rows[i].querySelectorAll("td, th");
+            
+            for (let j = 0; j < cols.length; j++) {
+                let data = cols[j].innerText.trim();
+                data = data.replace('⏱', '').replace(/"/g, '""').trim();
+                row.push(`"${data}"`); 
+            }
+            csv.push(row.join(","));
+        }
+
+        const csvContent = BOM + csv.join("\n");
+        const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(csvBlob);
+        
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0]; 
+        const timeStr = now.getHours().toString().padStart(2, '0') + "-" + 
+                        now.getMinutes().toString().padStart(2, '0');
+        const fileName = `Coding_Portal_Results_${dateStr}_${timeStr}.csv`;
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+
+    function clearAllResults() {
+        if (!confirm("⚠️ WARNING: This will permanently delete ALL student scores and submission history. This action cannot be undone. Are you sure?")) {
+            return;
+        }
+
+        fetch("/clear-analytics", { method: "DELETE" })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("All results have been cleared successfully.");
+                    loadAnalytics();
+                    updateStats();
+                } else {
+                    alert("Error: " + (data.error || "Could not clear data."));
+                }
+            })
+            .catch(err => {
+                console.error("Clear results error:", err);
+                alert("Server connection failed.");
+            });
+    }
+
+    window.onload = updateStats;
+</script>
+
+</body>
+</html>

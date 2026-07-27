@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS students (
+    student_id VARCHAR(50) PRIMARY KEY,
+    student_name VARCHAR(100) NOT NULL,
+    student_course VARCHAR(50),
+    password VARCHAR(100) DEFAULT 'adityacs'
+);
+
+-- 2. Ensure results table is linked correctly
+CREATE TABLE IF NOT EXISTS results (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE, -- This MUST be unique for ON CONFLICT
+    score INT DEFAULT 0,
+    time_taken INT DEFAULT 0,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. If the table already exists, run this to be safe:
+ALTER TABLE results DROP CONSTRAINT IF EXISTS unique_username;
+ALTER TABLE results ADD CONSTRAINT unique_username UNIQUE (username);

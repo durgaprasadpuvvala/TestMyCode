@@ -1,0 +1,36 @@
+.result-body {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.result-card {
+    background: white;
+    padding: 30px;
+    width: 500px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.result-card table {
+    width: 100%;
+    margin-top: 15px;
+    border-collapse: collapse;
+}
+
+.result-card th,
+.result-card td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.result-card button {
+    background: #0072ff;
+    color: white;
+}
+
+.result-card button:hover {
+    background: #0056d6;
+}

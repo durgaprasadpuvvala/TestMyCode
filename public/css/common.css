@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+button {
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+    padding: 10px 15px;
+    transition: 0.3s;
+}

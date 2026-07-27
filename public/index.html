@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Search Engine Meta Tags -->
+    <title>Test My Code | Elite Assessment Portal & Miss Coders Highlights</title>
+    <meta name="google-site-verification" content="u7i4QT8IdSsltXTbbgp4BRxAkHLvtOoUc-2ogIDuPnU" />
+    <meta name="title" content="Test My Code | Elite Assessment Portal & Miss Coders Highlights">
+    <meta name="description" content="A professional-grade assessment environment designed for developers. Practice coding, join hackathons like Miss Coders, and track real-time results.">
+    <meta name="keywords" content="Test My Code, coding assessment, Miss Coders, competitive programming, online judge, student portal">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Test My Code Team">
+
+    <!-- Open Graph / Social Media Meta Tags (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://testmycode-latest.onrender.com/">
+    <meta property="og:title" content="Test My Code | Elite Assessment Portal">
+    <meta property="og:description" content="Solve, build, and optimize code in a zero-latency assessment environment. Check out our latest Miss Coders event winners!">
+    <meta property="og:image" content="https://testmycode-latest.onrender.com/public/images/winners.jpg">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://testmycode-latest.onrender.com/">
+    <meta property="twitter:title" content="Test My Code | Elite Assessment Portal">
+    <meta property="twitter:description" content="Solve, build, and optimize code in a zero-latency assessment environment. Check out our latest Miss Coders event winners!">
+    <meta property="twitter:image" content="https://testmycode-latest.onrender.com/public/images/winners.jpg">
+
+    <!-- Schema.org JSON-LD for Google Search Rich Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Test My Code",
+      "url": "https://testmycode-latest.onrender.com/",
+      "logo": "https://testmycode-latest.onrender.com/public/images/winners.jpg",
+      "description": "Professional-grade coding assessment environment and competitive programming platform."
+    }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #06b6d4;
+            --secondary: #3b82f6;
+            --accent: #ec4899; /* Vibrant Pink/Magenta for Miss Coders Theme */
+            --dark-bg: #020617;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.12) 0%, transparent 40%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated Background Mesh */
+        .mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.2rem 8%;
+            align-items: center;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            transform: rotate(45deg);
+        }
+
+        .admin-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .admin-link:hover {
+            color: var(--primary);
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        /* --- MAIN HERO GRID --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            padding: 60px 8%;
+            gap: 60px;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            margin-bottom: 1rem;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .highlight {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .stat-item {
+            border-left: 2px solid var(--glass-border);
+            padding-left: 15px;
+        }
+
+        .stat-item h4 { margin: 0; font-size: 1.5rem; color: white; }
+        .stat-item span { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+
+        /* --- LOGIN CARD --- */
+        .login-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 32px;
+            position: relative;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.7);
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 40%; height: 1px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+        }
+
+        .login-card h2 { font-size: 2rem; margin: 0 0 10px 0; }
+        .login-card p { margin-bottom: 25px; font-size: 0.95rem; }
+
+        .input-group { margin-bottom: 18px; }
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: white;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(236, 72, 153, 0.05);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1rem;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(236, 72, 153, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* --- MISS CODERS SHOWCASE SECTION --- */
+        .winners-section {
+            padding: 80px 8%;
+            background: rgba(2, 6, 23, 0.7);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 2;
+        }
+
+        .winners-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .winners-badge {
+            display: inline-block;
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .winners-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+        }
+
+        .winners-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin: 0 0 40px 0;
+        }
+
+        .winners-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .winners-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(236, 72, 153, 0.3);
+        }
+
+        .winners-image-wrapper {
+            width: 100%;
+            max-height: 480px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .winners-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .winners-content {
+            padding: 30px;
+            text-align: left;
+        }
+
+        .winners-content h3 {
+            color: #f472b6;
+            font-size: 1.5rem;
+            margin: 0 0 8px 0;
+        }
+
+        .winners-content p {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* --- RESPONSIVE BREAKPOINTS --- */
+        @media (max-width: 968px) {
+            .main-container { 
+                grid-template-columns: 1fr; 
+                padding: 40px 5%; 
+                text-align: center; 
+            }
+            .hero-content p { margin-inline: auto; }
+            .stats-container { justify-content: center; }
+            h1 { font-size: 3rem; }
+            .winners-section { padding: 60px 5%; }
+            .winners-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mesh"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            TEST MY CODE
+        </div>
+        <a href="adminlogin.html" class="admin-link">Faculty Access</a>
+    </nav>
+
+    <!-- Main Hero Section -->
+    <main class="main-container">
+        <section class="hero-content">
+            <h1>Solve. Build.<br><span class="highlight">Optimize.</span></h1>
+            <p>A professional-grade assessment environment designed for the modern developer. Experience zero-latency execution and real-time analytics.</p>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h4>1.2k+</h4>
+                    <span>Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <h4>&lt;50ms</h4>
+                    <span>Latency</span>
+                </div>
+                <div class="stat-item">
+                    <h4>99.9%</h4>
+                    <span>Reliability</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Card -->
+        <section class="login-card">
+            <h2>Candidate Login</h2>
+            <p style="color: var(--text-muted)">Please authenticate to proceed to the terminal.</p>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" placeholder="SUC Number" required>
+                </div>
+                <div class="input-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName" placeholder="Full legal name" required>
+                </div>
+                <div class="input-group">
+                    <label for="studentclass">Class/Section</label>
+                    <input type="text" id="studentclass" placeholder="e.g. 1 Bsc cs || 1 BCA" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Access Key</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                        <span style="color: var(--primary); font-size: 0.75rem; font-weight: 600;">Default: adityacs</span>
+                    </div>
+                </div>
+
+                <button type="button" onclick="login()" class="btn-primary">Initialize Session</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Miss Coders Showcase Section -->
+    <section class="winners-section">
+        <div class="winners-container">
+            <div class="winners-badge">👑 LAST WEEK MISS CODERS WINNERS</div>
+            <h2 class="winners-title">Celebrating Our Top Female Coders</h2>
+            <p class="winners-subtitle">Honoring excellence, speed, and analytical precision in last week's Miss Coders hackathon & assessment.</p>
+            
+            <article class="winners-card">
+                <div class="winners-image-wrapper">
+                    <img src="images/winners.jpg" alt="Miss Coders Event Winners" class="winners-img" loading="lazy">
+                </div>
+                <div class="winners-content">
+                    <h3>Miss Coders Assessment Champions</h3>
+                    <p>Kudos to all participants and top rankers who showcased incredible problem-solving ability, speed, and clean code optimization in last week's event!</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <script>
+        function login() {
+            const id = document.getElementById("studentId").value;
+            const name = document.getElementById("studentName").value;
+            const course = document.getElementById("studentclass").value;
+            const pass = document.getElementById("password").value;
+
+            if (!id || !name || !pass || !course) {
+                alert("All credentials are required to initialize session.");
+                return;
+            }
+
+            if (pass !== "adityacs") {
+                alert("Invalid Access Key!");
+                return;
+            }
+
+            fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    studentId: id, 
+                    studentName: name, 
+                    studentCourse: course, 
+                    password: pass 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = `exam.html?id=${id}&user=${encodeURIComponent(name)}`;
+                } else {
+                    alert("Authentication Error: Secure connection failed.");
+                }
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Connectivity issue detected. Terminal unreachable.");
+            });
+        }
+    </script>
+</body>
+</html>

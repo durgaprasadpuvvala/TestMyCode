@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test My Code | Elite Assessment Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --dark: #030712;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #030712);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(var(--primary), var(--secondary));
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+            animation: move 15s infinite alternate;
+            opacity: 0.5;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(30%, 30%); }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem 8%;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hero Wrapper */
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 80px 8%;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .hero-content {
+            flex: 1;
+            min-width: 400px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .highlight { color: var(--primary); text-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+
+        .hero-content p {
+            color: #94a3b8;
+            max-width: 550px;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* --- LOGIN FORM SIDE --- */
+        .login-card {
+            flex: 0 0 400px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .login-card h2 { margin-top: 0; font-size: 1.8rem; margin-bottom: 5px; }
+        .login-card p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px; }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; margin-left: 5px; }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); background: #4f46e5; }
+
+        /* Stats Bar */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .card h3 { margin: 0; font-size: 1.5rem; color: var(--primary); }
+        .card p { margin: 5px 0 0; font-size: 0.8rem; color: #94a3b8; }
+
+    </style>
+</head>
+<body>
+
+    <div class="blob"></div>
+
+    <nav>
+        <div class="logo">TEST MY CODE</div>
+        <div>
+            
+            <a href="adminlogin.html" style="color: white; text-decoration: none; font-weight: 600;">Admin Login</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="hero-content">
+            <h1>Code. Compile. <br><span class="highlight">Conquer.</span></h1>
+            <p>The next-generation coding environment for competitive examinations. Real-time evaluation, 50+ languages supported, and AI-driven insights.</p>
+            
+            <div style="display: flex; gap: 15px;">
+                <a href="#" class="btn btn-primary" style="width: auto;">View Practice Labs</a>
+            </div>
+
+            <div class="stats-container">
+                <div class="card">
+                    <h3>1.2k+</h3>
+                    <p>Students</p>
+                </div>
+                <div class="card">
+                    <h3>0.4s</h3>
+                    <p>Execution</p>
+                </div>
+                <div class="card">
+                    <h3>99.9%</h3>
+                    <p>Uptime</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-card">
+            <h2>Student Login</h2>
+            <p>Enter your credentials to start the exam.</p>
+            
+            <form>
+                <div class="input-group">
+                    <label>Student ID</label>
+                    <input type="text" id="studentId" placeholder="e.g. STU12345" required>
+                </div>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="studentName"  placeholder="Enter your full name" required>
+                </div>
+                <div class="input-group">
+                    <label>Class</label>
+                     <input type="text" id="studentclass" placeholder="e.g. CS-A" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <small style="color: #6366f1; font-size: 0.7rem; margin-top: 5px; display: block;">Hint: adityacs</small>
+                </div>
+                
+
+                <button type="button" onclick="login()" class="btn btn-primary">Start Examination</button>
+
+            </form>
+        </div>
+    </div>
+
+<script> function login() {
+    const id = document.getElementById("studentId").value;
+    const name = document.getElementById("studentName").value;
+    const course = document.getElementById("studentclass").value; // Matches updated HTML ID
+    const pass = document.getElementById("password").value;
+
+    if (!id || !name || !pass || !course) {
+        alert("Please fill all fields, including Class.");
+        return;
+    }
+
+    // 1. Check password locally first to save server time
+    if (pass !== "adityacs") {
+        alert("Incorrect Password!");
+        return;
+    }
+
+    // 2. Save student to DB
+    fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            studentId: id, 
+            studentName: name, 
+            studentCourse: course, 
+            password: pass 
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect to exam page
+            window.location.href = `exam.html?id=${id}&user=${encodeURIComponent(name)}`;
+        } else {
+            alert("Login failed on server. Please try again.");
+        }
+    })
+    .catch(err => {
+        console.error("Error:", err);
+        alert("Server is not responding. Check your connection.");
+    });
+}
+</script>
+
+<script>
+function openAdminLogin(){
+    window.location.href = "adminlogin.html";
+}
+</script>
+
+</body>
+</html>
