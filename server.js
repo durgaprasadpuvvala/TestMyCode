@@ -463,26 +463,159 @@ app.get("/analytics", async (req, res) => {
     }
 });
 
-app.post("/login", async (req, res) => {
-    const { studentId, studentName, studentCourse, password } = req.body;
+// Route to handle student registration
+app.post('/register', async (req, res) => {
+    const { studentId, studentName, studentCourse, phone, email, password } = req.body;
+
+    // Validate required fields
+    if (!studentId || !studentName || !password) {
+        return res.status(400).json({ success: false, message: 'Student ID, Name, and Password are required.' });
+    }
+
     try {
-        const result = await pool.query("SELECT * FROM students WHERE student_id = $1", [studentId]);
+        // Insert query into PostgreSQL students table
+        const query = `
+            INSERT INTO students (student_id, student_name, student_course, phone, email, password)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+
+        const values = [studentId, studentName, studentCourse, phone, email, password];
         
-        if (result.rows.length === 0) {
-            await pool.query(
-                "INSERT INTO students (student_id, student_name, student_course, password) VALUES ($1, $2, $3, $4)", 
-                [studentId, studentName, studentCourse || 'N/A', password]
-            );
-        } else {
-            await pool.query(
-                "UPDATE students SET student_name = $1, student_course = $2 WHERE student_id = $3",
-                [studentName, studentCourse, studentId]
-            );
-        }
-        res.json({ success: true });
+        await pool.query(query, values);
+
+        return res.status(200).json({ success: true, message: 'Registration successful!' });
+
     } catch (err) {
-        console.error("Login Error:", err);
-        res.status(500).json({ success: false, error: err.message });
+        console.error('Registration error:', err.message);
+
+        // PostgreSQL error code 23505 indicates a unique violation (e.g., student_id already exists)
+        if (err.code === '23505') {
+            return res.status(400).json({ success: false, message: 'Student ID already exists. Try logging in.' });
+        }
+
+        return res.status(500).json({ success: false, message: 'Internal server error during registration.' });
+    }
+});
+// Route to handle candidate login
+app.post('/login', async (req, res) => {
+    const { studentId, password } = req.body;
+
+    // Validate input fields
+    if (!studentId || !password) {
+        return res.status(400).json({ success: false, message: 'Student ID and Password are required.' });
+    }
+
+    try {
+        // Query the database for the student record matching student_id
+        const query = 'SELECT * FROM students WHERE student_id = $1';
+        const result = await pool.query(query, [studentId]);
+
+        // Check if student exists
+        if (result.rows.length === 0) {
+            return res.status(401).json({ success: false, message: 'Authentication Error: Student ID not found.' });
+        }
+
+        const student = result.rows[0];
+
+        // Verify password (Note: In production, use bcrypt.compare() if passwords are hashed)
+        if (student.password !== password) {
+            return res.status(401).json({ success: false, message: 'Authentication Error: Invalid credentials.' });
+        }
+
+        // Authentication successful: pass success flag and student name back to the frontend
+        return res.status(200).json({
+            success: true,
+            message: 'Login successful!',
+            studentName: student.student_name // Passed to match your frontend redirect logic
+        });
+
+    } catch (err) {
+        console.error('Login error:', err.message);
+        return res.status(500).json({ success: false, message: 'Internal server error during authentication.' });
+    }
+});
+
+// Route to handle password reset requests
+
+// In-memory store for OTPs (For production scaling, consider using Redis or a database table)
+const otpStorage = {};
+
+// 1. Route to handle sending OTP via Phone Number
+app.post('/send-otp', async (req, res) => {
+    const { studentId, phone } = req.body;
+
+    // Validate inputs
+    if (!studentId || !phone) {
+        return res.status(400).json({ success: false, message: 'Student ID and Phone Number are required.' });
+    }
+
+    try {
+        // Query the database to check if student ID and phone match an existing record
+        const query = 'SELECT * FROM students WHERE student_id = $1 AND phone = $2';
+        const result = await pool.query(query, [studentId, phone]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'No account found matching this Student ID and Phone Number.' });
+        }
+
+        // Generate a random 6-digit OTP
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Store OTP with an expiration time of 5 minutes
+        otpStorage[studentId] = {
+            otp: generatedOtp,
+            expiresAt: Date.now() + 5 * 60 * 1000 
+        };
+
+        // Output to server console (Integrate Twilio or SMS API here for live deployment)
+        console.log(`[OTP Service] OTP for Student ID ${studentId}: ${generatedOtp}`);
+
+        return res.status(200).json({ 
+            success: true, 
+            message: 'OTP sent successfully to your registered mobile number.' 
+        });
+
+    } catch (err) {
+        console.error('Send OTP error:', err.message);
+        return res.status(500).json({ success: false, message: 'Internal server error while sending OTP.' });
+    }
+});
+
+// 2. Route to handle OTP verification and update the password
+app.post('/send-otp', async (req, res) => {
+    const { studentId, phone } = req.body;
+
+    if (!studentId || !phone) {
+        return res.status(400).json({ success: false, message: 'Student ID and Phone Number are required.' });
+    }
+
+    try {
+        const query = 'SELECT * FROM students WHERE student_id = $1 AND phone = $2';
+        const result = await pool.query(query, [studentId, phone]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'No account found matching this Student ID and Phone Number.' });
+        }
+
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        otpStorage[studentId] = {
+            otp: generatedOtp,
+            expiresAt: Date.now() + 5 * 60 * 1000 
+        };
+
+        // FOR FREE TESTING: Send the OTP back in the response object so it shows up easily
+        console.log(`[Free Dev OTP] Student ${studentId} OTP: ${generatedOtp}`);
+
+        return res.status(200).json({ 
+            success: true, 
+            message: 'OTP generated successfully!',
+            debugOtp: generatedOtp // Remove this line when you finally deploy live!
+        });
+
+    } catch (err) {
+        console.error('Error:', err.message);
+        return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 });
 

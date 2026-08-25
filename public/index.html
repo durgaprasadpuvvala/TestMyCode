@@ -331,6 +331,25 @@
             filter: brightness(1.1);
         }
 
+        .form-footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .form-footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .form-footer-links a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
         /* --- MISS CODERS SHOWCASE SECTION --- */
         .winners-section {
             padding: 80px 8%;
@@ -423,15 +442,15 @@
         /* --- RESPONSIVE BREAKPOINTS --- */
         @media (max-width: 968px) {
             .main-container { 
-                grid-template-columns: 1fr; 
-                padding: 40px 5%; 
-                text-align: center; 
-            }
-            .hero-content p { margin-inline: auto; }
-            .stats-container { justify-content: center; }
-            h1 { font-size: 3rem; }
-            .winners-section { padding: 60px 5%; }
-            .winners-title { font-size: 1.8rem; }
+              grid-template-columns: 1fr; 
+              padding: 40px 5%; 
+              text-align: center; 
+          }
+          .hero-content p { margin-inline: auto; }
+          .stats-container { justify-content: center; }
+          h1 { font-size: 3rem; }
+          .winners-section { padding: 60px 5%; }
+          .winners-title { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -481,22 +500,16 @@
                     <input type="text" id="studentId" placeholder="SUC Number" required>
                 </div>
                 <div class="input-group">
-                    <label for="studentName">Full Name</label>
-                    <input type="text" id="studentName" placeholder="Full legal name" required>
-                </div>
-                <div class="input-group">
-                    <label for="studentclass">Class/Section</label>
-                    <input type="text" id="studentclass" placeholder="e.g. 1 Bsc cs || 1 BCA" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Access Key</label>
+                    <label for="password">Password</label>
                     <input type="password" id="password" placeholder="••••••••" required>
-                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                        <span style="color: var(--primary); font-size: 0.75rem; font-weight: 600;">Default: adityacs</span>
-                    </div>
                 </div>
 
                 <button type="button" onclick="login()" class="btn-primary">Initialize Session</button>
+
+                <div class="form-footer-links">
+                    <a href="forgot-password.html">Forgot Password?</a>
+                    <a href="register.html">Don't have an account? Sign up</a>
+                </div>
             </form>
         </section>
     </main>
@@ -523,17 +536,10 @@
     <script>
         function login() {
             const id = document.getElementById("studentId").value;
-            const name = document.getElementById("studentName").value;
-            const course = document.getElementById("studentclass").value;
             const pass = document.getElementById("password").value;
 
-            if (!id || !name || !pass || !course) {
-                alert("All credentials are required to initialize session.");
-                return;
-            }
-
-            if (pass !== "adityacs") {
-                alert("Invalid Access Key!");
+            if (!id || !pass) {
+                alert("Student ID and Password are required to initialize session.");
                 return;
             }
 
@@ -542,17 +548,17 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     studentId: id, 
-                    studentName: name, 
-                    studentCourse: course, 
                     password: pass 
                 })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = `exam.html?id=${id}&user=${encodeURIComponent(name)}`;
+                    // Passes student name back if returned by server backend, fallback to ID
+                    const studentName = data.studentName || id;
+                    window.location.href = `exam.html?id=${id}&user=${encodeURIComponent(studentName)}`;
                 } else {
-                    alert("Authentication Error: Secure connection failed.");
+                    alert(data.message || "Authentication Error: Invalid credentials.");
                 }
             })
             .catch(err => {
