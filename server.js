@@ -101,6 +101,36 @@ app.get("/questions", async (req, res) => {
     }
 });
 
+app.get('/questions/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // FIXED: Changed db.query to pool.query
+        const result = await pool.query('SELECT * FROM questions WHERE id = $1', [parseInt(id, 10)]);
+
+        if (!result.rows || result.rows.length === 0) {
+            return res.status(404).json({ error: 'Question not found' });
+        }
+
+        const question = result.rows[0];
+
+        if (typeof question.test_cases === 'string') {
+            try {
+                question.test_cases = JSON.parse(question.test_cases);
+            } catch (pErr) {
+                console.error("JSON parse warning:", pErr);
+                question.test_cases = [];
+            }
+        }
+
+        res.json(question);
+
+    } catch (err) {
+        console.error("Server error on GET /questions/:id ->", err);
+        res.status(500).json({ error: 'Database query failed', details: err.message });
+    }
+});
+
 app.post("/add-question", async (req, res) => {
     const { title, description, test_cases, language = "python" } = req.body;
     const sql = `INSERT INTO questions (title, description, language, test_cases) VALUES ($1, $2, $3, $4)`;
@@ -142,7 +172,6 @@ app.post("/run", async (req, res) => {
     }
 });
 
-// GET USER SUBMISSIONS (To highlight submitted pills in UI)
 app.get("/user-submissions/:id", async (req, res) => {
     const username = req.params.id;
     try {
@@ -154,73 +183,283 @@ app.get("/user-submissions/:id", async (req, res) => {
     }
 });
 
-// SUBMIT ROUTE: Overwrites old code & score with latest attempt for that question
+// SUBMIT ROUTE: Overwrites old code & score with latest attempt
 app.post("/submit", async (req, res) => {
-    const { code, language, questionId, username, timeSpent } = req.body;
-    
-    if (!username) return res.status(400).json({ success: false, error: "Student ID missing" });
+
+    const {
+        code,
+        language,
+        questionId,
+        username,
+        timeSpent
+    } = req.body;
+
+    if (!username) {
+        return res.status(400).json({
+            success: false,
+            error: "Student ID missing"
+        });
+    }
+
+    if (!questionId) {
+        return res.status(400).json({
+            success: false,
+            error: "Question ID missing"
+        });
+    }
+
+    if (!code) {
+        return res.status(400).json({
+            success: false,
+            error: "Code is empty"
+        });
+    }
+
+    const client = await pool.connect();
 
     try {
-        const qResult = await pool.query("SELECT test_cases FROM questions WHERE id = $1", [questionId]);
-        if (qResult.rows.length === 0) return res.json({ success: false, error: "Question not found" });
 
-        let testCases = typeof qResult.rows[0].test_cases === 'string' 
-            ? JSON.parse(qResult.rows[0].test_cases) 
-            : qResult.rows[0].test_cases;
+        await client.query("BEGIN");
 
-        let passedCount = 0;
-        for (let test of testCases) {
-            const output = await new Promise((resolve) => {
-                executeCode(code, language, test.input, (err, out) => resolve(out || ""));
-            });
-            if (output.toString().trim() === test.output.toString().trim()) passedCount++;
+        // -----------------------------------------
+        // 1. Check student
+        // -----------------------------------------
+
+        const studentResult = await client.query(
+            "SELECT student_id FROM students WHERE student_id = $1",
+            [username]
+        );
+
+        if (studentResult.rows.length === 0) {
+            throw new Error("Student not found: " + username);
         }
 
+        // -----------------------------------------
+        // 2. Get question
+        // -----------------------------------------
+
+        const qResult = await client.query(
+            "SELECT test_cases FROM questions WHERE id = $1",
+            [questionId]
+        );
+
+        if (qResult.rows.length === 0) {
+            throw new Error("Question not found: " + questionId);
+        }
+
+        let testCases = qResult.rows[0].test_cases;
+
+        if (typeof testCases === "string") {
+            testCases = JSON.parse(testCases);
+        }
+
+        if (!Array.isArray(testCases)) {
+            testCases = [];
+        }
+
+        // -----------------------------------------
+        // 3. Run test cases
+        // -----------------------------------------
+
+        let passedCount = 0;
+
+        for (const test of testCases) {
+
+            const output = await new Promise((resolve) => {
+
+                executeCode(
+                    code,
+                    language,
+                    test.input,
+                    (err, out) => {
+                        resolve(out || "");
+                    }
+                );
+
+            });
+
+            const actualOutput = output
+                .toString()
+                .trim();
+
+            const expectedOutput = test.output
+                .toString()
+                .trim();
+
+            if (actualOutput === expectedOutput) {
+                passedCount++;
+            }
+        }
+
+        // 5 marks per test case
         const currentQuestionScore = passedCount * 5;
 
-        // UPSERT INTO SUBMISSIONS TABLE (Overwrites existing attempt for same question)
-        const upsertSubmissionSql = `
-            INSERT INTO submissions (username, question_id, code, language, score, time_taken, submitted_at)
-            VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
-            ON CONFLICT (username, question_id) 
-            DO UPDATE SET 
+        const safeTime = Math.max(
+            0,
+            parseInt(timeSpent || 0)
+        );
+
+        // -----------------------------------------
+        // 4. Save submission
+        // -----------------------------------------
+
+        const submissionSql = `
+            INSERT INTO submissions
+            (
+                username,
+                question_id,
+                code,
+                language,
+                score,
+                time_taken,
+                submitted_at
+            )
+            VALUES
+            ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+
+            ON CONFLICT (username, question_id)
+
+            DO UPDATE SET
                 code = EXCLUDED.code,
                 language = EXCLUDED.language,
                 score = EXCLUDED.score,
                 time_taken = EXCLUDED.time_taken,
-                submitted_at = CURRENT_TIMESTAMP;
+                submitted_at = CURRENT_TIMESTAMP
         `;
-        
-        await pool.query(upsertSubmissionSql, [username, questionId, code, language, currentQuestionScore, timeSpent || 0]);
 
-        res.json({ success: true, scoreEarned: currentQuestionScore });
+        await client.query(submissionSql, [
+            username,
+            questionId,
+            code,
+            language,
+            currentQuestionScore,
+            safeTime
+        ]);
+
+        // -----------------------------------------
+        // 5. Update overall results
+        // -----------------------------------------
+
+        const resultSql = `
+            INSERT INTO results
+            (
+                username,
+                score,
+                time_taken,
+                attempts,
+                created_at,
+                submitted_at
+            )
+            VALUES
+            (
+                $1,
+                $2,
+                $3,
+                1,
+                CURRENT_TIMESTAMP,
+                CURRENT_TIMESTAMP
+            )
+
+            ON CONFLICT (username)
+
+            DO UPDATE SET
+                score = (
+                    SELECT COALESCE(SUM(score), 0)
+                    FROM submissions
+                    WHERE username = $1
+                ),
+
+                time_taken = (
+                    SELECT COALESCE(SUM(time_taken), 0)
+                    FROM submissions
+                    WHERE username = $1
+                ),
+
+                attempts = (
+                    SELECT COUNT(*)
+                    FROM submissions
+                    WHERE username = $1
+                ),
+
+                submitted_at = CURRENT_TIMESTAMP
+        `;
+
+        await client.query(resultSql, [
+            username,
+            currentQuestionScore,
+            safeTime
+        ]);
+
+        await client.query("COMMIT");
+
+        console.log(
+            `✅ Submission saved: Student=${username}, Question=${questionId}, Score=${currentQuestionScore}`
+        );
+
+        res.json({
+            success: true,
+            scoreEarned: currentQuestionScore,
+            questionId: questionId
+        });
 
     } catch (err) {
-        console.error("SUBMIT ERROR:", err);
-        res.status(500).json({ success: false, error: "Database Error: " + err.message });
+
+        await client.query("ROLLBACK");
+
+        console.error("❌ SUBMIT ERROR:", err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+
+    } finally {
+
+        client.release();
+
     }
 });
-
-// ANALYTICS: Sums up scores from the 'submissions' table (Takes only the latest per question)
+// FIXED ANALYTICS ROUTE: Prevents negative duration calculations
 app.get("/analytics", async (req, res) => {
-    const sql = `
-        SELECT 
-            sub.username AS student_id, 
-            s.student_name, 
-            s.student_course, 
-            SUM(sub.score) AS total_score, 
-            COUNT(sub.question_id) AS total_attempts, 
-            SUM(sub.time_taken) AS total_seconds, 
-            MAX(sub.submitted_at) AS last_submitted 
-        FROM submissions sub
-        LEFT JOIN students s ON sub.username = s.student_id
-        GROUP BY sub.username, s.student_name, s.student_course
-        ORDER BY total_score DESC, total_seconds ASC`;
+
     try {
-        const results = await pool.query(sql);
-        res.json(results.rows);
+
+        const query = `
+            SELECT
+                r.username AS student_id,
+                s.student_name,
+                s.student_course,
+
+                r.attempts AS total_attempts,
+
+                r.score AS total_score,
+
+                r.time_taken AS total_seconds,
+
+                r.created_at AS start_time,
+
+                r.submitted_at AS last_submitted
+
+            FROM results r
+
+            LEFT JOIN students s
+                ON r.username = s.student_id
+
+            ORDER BY r.submitted_at DESC
+        `;
+
+        const { rows } = await pool.query(query);
+
+        res.json(rows);
+
     } catch (err) {
-        res.status(500).json({ error: "Database query failed" });
+
+        console.error("❌ Error fetching analytics:", err);
+
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
     }
 });
 
@@ -247,58 +486,27 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// FIXED CLEAR ALL RESULTS: Truncates both submissions and results tables
 app.delete("/clear-analytics", async (req, res) => {
     try {
+        await pool.query("BEGIN");
         await pool.query("DELETE FROM submissions");
-        res.json({ success: true });
+        await pool.query("DELETE FROM results");
+        await pool.query("COMMIT");
+        
+        res.json({ success: true, message: "All analytics cleared successfully" });
     } catch (err) {
-        res.status(500).json({ success: false });
+        await pool.query("ROLLBACK");
+        console.error("CLEAR ERROR:", err);
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
-// --- DELETE QUESTION ENDPOINT ---
-
-// Express.js Backend Example
-app.get('/questions/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        // 1. Query database using parameterized query
-        const result = await db.query('SELECT * FROM questions WHERE id = $1', [parseInt(id, 10)]);
-
-        if (!result.rows || result.rows.length === 0) {
-            return res.status(404).json({ error: 'Question not found' });
-        }
-
-        const question = result.rows[0];
-
-        // 2. Safely parse test_cases (handles both String and JSON object types)
-        if (typeof question.test_cases === 'string') {
-            try {
-                question.test_cases = JSON.parse(question.test_cases);
-            } catch (pErr) {
-                console.error("JSON parse warning:", pErr);
-                question.test_cases = [];
-            }
-        }
-
-        // 3. Return question data
-        res.json(question);
-
-    } catch (err) {
-        console.error("Server error on GET /questions/:id ->", err);
-        res.status(500).json({ error: 'Database query failed', details: err.message });
-    }
-});
-// --- DELETE QUESTION ENDPOINT ---
 app.delete("/delete-question/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
-        // 1. First delete references in submissions table to prevent foreign key errors
         await pool.query("DELETE FROM submissions WHERE question_id = $1", [id]);
-
-        // 2. Delete the question itself
         const result = await pool.query("DELETE FROM questions WHERE id = $1", [id]);
 
         if (result.rowCount === 0) {

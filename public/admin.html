@@ -526,6 +526,7 @@
                                 <th>Course</th>
                                 <th>Attempts</th>
                                 <th>Total Score</th>
+                                <th>Starting Time</th>
                                 <th>Time Spent</th>
                                 <th>Last Submission</th>
                             </tr>
@@ -537,6 +538,14 @@
                     const dateObj = new Date(row.last_submitted);
                     const formattedDate = dateObj.toLocaleDateString() + ", " + 
                                           dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    // Format Starting Time (using row.start_time or fallback to row.created_at)
+                    let formattedStartTime = "N/A";
+                    if (row.start_time || row.created_at) {
+                        const startObj = new Date(row.start_time || row.created_at);
+                        formattedStartTime = startObj.toLocaleDateString() + ", " + 
+                                             startObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
 
                     // Cap time spent at 3600 seconds (60 mins max for the exam)
                     const rawSecs = row.total_seconds || 0;
@@ -554,6 +563,7 @@
                             <td style="color: #a855f7; font-weight: 600;">${row.student_course}</td> 
                             <td>${row.total_attempts}</td> 
                             <td style="color: #22c55e; font-weight: bold;">${row.total_score}</td>
+                            <td style="color: #38bdf8; font-size: 0.9rem;">${formattedStartTime}</td>
                             <td><span style="color: #fbbf24; font-weight: bold;">⏱ ${timeDisplay}</span></td>
                             <td style="color: #94a3b8; font-size: 0.9rem;">${formattedDate}</td>
                         </tr>

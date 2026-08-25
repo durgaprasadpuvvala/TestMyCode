@@ -583,56 +583,111 @@
         });
     }
 
-    function submitExam() {
-        const code = editor.getValue();
+    async function submitExam() {
+    try {
+        if (!editor) {
+            console.error("Code editor is not ready.");
+            return;
+        }
+
+        if (!questions || questions.length === 0) {
+            console.error("Questions are not loaded yet.");
+            return;
+        }
+
+        const code = editor.getValue().trim();
         const language = document.getElementById("language").value;
         const currentQuestion = questions[currentIndex];
+
+        if (!currentQuestion) {
+            console.error("Current question not found.");
+            return;
+        }
+
         const params = new URLSearchParams(window.location.search);
         const sId = params.get("id");
 
-        const submitBtn = document.querySelector(".btn-submit");
-        const originalText = submitBtn.innerText;
-        
-        submitBtn.innerText = "Submitting...";
-        submitBtn.disabled = true;
+        if (!sId || sId === "N/A") {
+            console.error("Student ID is missing.");
+            return;
+        }
 
-        fetch("/submit", {
+        const submitBtn = document.querySelector(".btn-submit");
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Submitting...";
+
+        const response = await fetch("/submit", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 code: code,
                 language: language,
                 questionId: currentQuestion.id,
                 username: sId,
-                timeSpent: 3600 - timeLeft
+                timeSpent: Math.max(0, 3600 - timeLeft)
             })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Server responded with " + res.status);
-            return res.json();
-        })
-        .then(data => {
-            submitBtn.innerText = originalText;
-            submitBtn.disabled = false;
-            
-            if (data.success) {
-                if (!submittedQuestionsList.includes(currentQuestion.id)) {
-                    submittedQuestionsList.push(currentQuestion.id);
-                }
-
-                if (currentIndex < questions.length - 1) {
-                    nextQuestion(); 
-                } else {
-                    displayQuestion();
-                }
-            }
-        })
-        .catch(err => {
-            submitBtn.innerText = originalText;
-            submitBtn.disabled = false;
-            console.error("Submission Error:", err);
         });
+
+        const data = await response.json();
+
+        console.log("SUBMIT RESPONSE:", data);
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.error || `Server error: ${response.status}`
+            );
+        }
+
+        // Mark current question as submitted
+        if (!submittedQuestionsList.includes(currentQuestion.id)) {
+            submittedQuestionsList.push(currentQuestion.id);
+        }
+
+        renderPalette();
+
+        // Optional: Show a subtle security-toast notification instead of a blocking popup alert
+        const toast = document.getElementById("security-toast");
+        if (toast) {
+            toast.style.background = "#16a34a"; // Green success color
+            toast.innerText = `✔ Question submitted successfully! Score earned: ${data.scoreEarned || 0}`;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 4000);
+        }
+
+        // Move to next question or stay
+        if (currentIndex < questions.length - 1) {
+            nextQuestion();
+        } else {
+            displayQuestion();
+        }
+
+    } catch (err) {
+        console.error("Submission Error:", err);
+
+        const toast = document.getElementById("security-toast");
+        if (toast) {
+            toast.style.background = "#ef4444"; // Red error color
+            toast.innerText = `❌ Submission failed: ${err.message}`;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 4000);
+        }
+
+    } finally {
+        const submitBtn = document.querySelector(".btn-submit");
+
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Code ▶";
+        }
     }
+}
 
     function endExam() {
         localStorage.removeItem("exam_progress");
