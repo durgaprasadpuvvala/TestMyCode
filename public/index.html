@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,15 +13,13 @@
          BASIC SEO
     ================================= -->
 
-    <title>
-        Test My Code - Online Coding Assessment & Programming Tests
-    </title>
+    <title>Test My Code - Online Coding Assessment & Programming Tests</title>
 
     <meta name="description"
           content="Test My Code is an online coding assessment platform for students and developers. Practice C, C++, Java and Python programming, take coding tests, solve programming problems and participate in coding assessments.">
 
     <meta name="robots"
-          content="index, follow">
+          content="index, follow, max-image-preview:large">
 
     <meta name="author"
           content="Test My Code">
@@ -30,14 +29,12 @@
     <meta name="google-site-verification"
           content="u7i4QT8IdSsltXTbbgp4BRxAkHLvtOoUc-2ogIDuPnU">
 
-
     <!-- ================================
          CANONICAL URL
     ================================= -->
 
     <link rel="canonical"
           href="https://testmycode-latest.onrender.com/">
-
 
     <!-- ================================
          OPEN GRAPH
@@ -56,11 +53,10 @@
           content="Practice programming, take coding assessments and solve C, C++, Java and Python coding problems with Test My Code.">
 
     <meta property="og:image"
-          content="https://testmycode-latest.onrender.com/images/winners.jpg">
+          content="https://testmycode-latest.onrender.com/images/mcoder.jpeg">
 
     <meta property="og:site_name"
           content="Test My Code">
-
 
     <!-- ================================
          TWITTER / X
@@ -76,496 +72,1294 @@
           content="Practice programming and take online coding assessments in C, C++, Java and Python.">
 
     <meta name="twitter:image"
-          content="https://testmycode-latest.onrender.com/images/winners.jpg">
-
+          content="https://testmycode-latest.onrender.com/images/mcoder.jpeg">
 
     <!-- ================================
          GOOGLE FONTS
     ================================= -->
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
 
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+          rel="stylesheet">
 
     <!-- ================================
          ORGANIZATION SCHEMA
     ================================= -->
 
     <script type="application/ld+json">
-
     {
         "@context": "https://schema.org",
-
         "@type": "EducationalOrganization",
-
         "name": "Test My Code",
-
         "url": "https://testmycode-latest.onrender.com/",
-
-        "logo": "https://testmycode-latest.onrender.com/images/winners.jpg",
-
+        "logo": "https://testmycode-latest.onrender.com/images/mcoder.jpeg",
         "description": "Online coding assessment and programming practice platform for students and developers.",
-
         "sameAs": []
     }
-
     </script>
-
 
     <!-- ================================
          WEBSITE SCHEMA
     ================================= -->
 
     <script type="application/ld+json">
-
     {
         "@context": "https://schema.org",
-
         "@type": "WebSite",
-
         "name": "Test My Code",
-
         "url": "https://testmycode-latest.onrender.com/"
     }
-
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+
         :root {
             --primary: #06b6d4;
             --secondary: #3b82f6;
-            --accent: #ec4899; /* Vibrant Pink/Magenta for Miss Coders Theme */
+            --accent: #ec4899;
             --dark-bg: #020617;
             --card-bg: rgba(15, 23, 42, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
             --text-muted: #94a3b8;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--dark-bg);
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.12) 0%, transparent 40%);
+
+            background-image:
+                radial-gradient(
+                    circle at 0% 0%,
+                    rgba(6, 182, 212, 0.15) 0%,
+                    transparent 40%
+                ),
+                radial-gradient(
+                    circle at 100% 100%,
+                    rgba(236, 72, 153, 0.12) 0%,
+                    transparent 40%
+                );
+
             color: white;
             min-height: 100vh;
+
             display: flex;
             flex-direction: column;
         }
 
-        /* Animated Background Mesh */
+        /* ================================
+           BACKGROUND MESH
+        ================================= */
+
         .mesh {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+
+            background: url(
+                'https://grainy-gradients.vercel.app/noise.svg'
+            );
+
             opacity: 0.05;
             pointer-events: none;
             z-index: 1;
         }
 
+        /* ================================
+           NAVIGATION
+        ================================= */
+
         nav {
             display: flex;
             justify-content: space-between;
-            padding: 1.2rem 8%;
             align-items: center;
+
+            padding: 1.2rem 8%;
+
             background: rgba(2, 6, 23, 0.8);
+
             backdrop-filter: blur(12px);
+
             border-bottom: 1px solid var(--glass-border);
+
             position: sticky;
             top: 0;
+
             z-index: 10;
         }
 
         .logo {
             font-size: 1.4rem;
             font-weight: 800;
+
             letter-spacing: -1px;
+
             display: flex;
             align-items: center;
+
             gap: 10px;
         }
 
         .logo-icon {
             width: 30px;
             height: 30px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--accent)
+                );
+
             border-radius: 8px;
+
             transform: rotate(45deg);
         }
 
         .admin-link {
             color: var(--text-muted);
+
             text-decoration: none;
+
             font-weight: 600;
+
             font-size: 0.9rem;
+
             transition: 0.3s;
+
             padding: 8px 16px;
+
             border-radius: 8px;
         }
 
         .admin-link:hover {
             color: var(--primary);
-            background: rgba(6, 182, 212, 0.1);
+
+            background:
+                rgba(6, 182, 212, 0.1);
         }
 
-        /* --- MAIN HERO GRID --- */
+        /* ================================
+           MAIN HERO
+        ================================= */
+
         .main-container {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
+
+            grid-template-columns:
+                1.2fr 0.8fr;
+
             align-items: center;
+
             padding: 60px 8%;
+
             gap: 60px;
+
             z-index: 2;
+
+            flex: 1;
         }
 
         h1 {
             font-size: 4.5rem;
+
+            margin-top: 0;
             margin-bottom: 1rem;
+
             line-height: 1;
+
             font-weight: 800;
+
             letter-spacing: -2px;
         }
 
         .highlight {
-            background: linear-gradient(to right, var(--primary), var(--accent));
+            background:
+                linear-gradient(
+                    to right,
+                    var(--primary),
+                    var(--accent)
+                );
+
             -webkit-background-clip: text;
+
             -webkit-text-fill-color: transparent;
         }
 
         .hero-content p {
             color: var(--text-muted);
+
             font-size: 1.2rem;
+
             line-height: 1.7;
+
             margin-bottom: 2.5rem;
-            max-width: 500px;
+
+            max-width: 560px;
         }
 
-        /* Stats Section */
+        /* ================================
+           STATS
+        ================================= */
+
         .stats-container {
             display: flex;
+
             gap: 30px;
+
             margin-top: 50px;
+
+            flex-wrap: wrap;
         }
 
         .stat-item {
-            border-left: 2px solid var(--glass-border);
+            border-left:
+                2px solid var(--glass-border);
+
             padding-left: 15px;
         }
 
-        .stat-item h4 { margin: 0; font-size: 1.5rem; color: white; }
-        .stat-item span { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-item h4 {
+            margin: 0;
 
-        /* --- LOGIN CARD --- */
+            font-size: 1.5rem;
+
+            color: white;
+        }
+
+        .stat-item span {
+            font-size: 0.8rem;
+
+            color: var(--text-muted);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+        }
+
+        /* ================================
+           LOGIN CARD
+        ================================= */
+
         .login-card {
             background: var(--card-bg);
+
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+
+            border:
+                1px solid var(--glass-border);
+
             padding: 40px;
+
             border-radius: 32px;
+
             position: relative;
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.7);
+
+            box-shadow:
+                0 40px 100px -20px
+                rgba(0, 0, 0, 0.7);
         }
 
         .login-card::before {
             content: '';
+
             position: absolute;
-            top: -1px; left: 50%; transform: translateX(-50%);
-            width: 40%; height: 1px;
-            background: linear-gradient(to right, transparent, var(--accent), transparent);
+
+            top: -1px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 40%;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    to right,
+                    transparent,
+                    var(--accent),
+                    transparent
+                );
         }
 
-        .login-card h2 { font-size: 2rem; margin: 0 0 10px 0; }
-        .login-card p { margin-bottom: 25px; font-size: 0.95rem; }
+        .login-card h2 {
+            font-size: 2rem;
 
-        .input-group { margin-bottom: 18px; }
+            margin:
+                0 0 10px 0;
+        }
+
+        .login-card-description {
+            color: var(--text-muted);
+
+            margin-bottom: 25px;
+
+            font-size: 0.95rem;
+
+            line-height: 1.6;
+        }
+
+        /* ================================
+           INPUTS
+        ================================= */
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
         .input-group label {
             display: block;
+
             font-size: 0.75rem;
+
             font-weight: 600;
+
             text-transform: uppercase;
+
             letter-spacing: 1px;
+
             color: var(--text-muted);
+
             margin-bottom: 8px;
         }
-        
+
         input {
             width: 100%;
+
             padding: 14px 18px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
+
+            background:
+                rgba(255, 255, 255, 0.03);
+
+            border:
+                1px solid var(--glass-border);
+
             border-radius: 14px;
+
             color: white;
+
             font-family: inherit;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-sizing: border-box;
+
+            font-size: 1rem;
+
+            transition:
+                all 0.3s
+                cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input::placeholder {
+            color: #64748b;
         }
 
         input:focus {
             outline: none;
-            border-color: var(--accent);
-            background: rgba(236, 72, 153, 0.05);
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.15);
+
+            border-color:
+                var(--accent);
+
+            background:
+                rgba(236, 72, 153, 0.05);
+
+            box-shadow:
+                0 0 20px
+                rgba(236, 72, 153, 0.15);
         }
 
+        /* ================================
+           LOGIN BUTTON
+        ================================= */
+
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--accent)
+                );
+
             color: white;
+
             padding: 16px;
+
             border-radius: 14px;
+
             font-weight: 800;
+
             font-size: 1rem;
+
             border: none;
+
             width: 100%;
+
             cursor: pointer;
+
             transition: 0.4s;
-            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.3);
+
+            box-shadow:
+                0 10px 25px -5px
+                rgba(236, 72, 153, 0.3);
+
             margin-top: 10px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px -5px rgba(236, 72, 153, 0.4);
+        .btn-primary:hover:not(:disabled) {
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 15px 30px -5px
+                rgba(236, 72, 153, 0.4);
+
             filter: brightness(1.1);
         }
 
+        .btn-primary:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.65;
+
+            transform: none;
+        }
+
+        /* ================================
+           FORM LINKS
+        ================================= */
+
         .form-footer-links {
             display: flex;
-            justify-content: space-between;
+
+            justify-content:
+                space-between;
+
             align-items: center;
+
+            gap: 10px;
+
             margin-top: 15px;
+
             font-size: 0.85rem;
         }
 
         .form-footer-links a {
             color: var(--text-muted);
+
             text-decoration: none;
-            transition: color 0.2s;
+
+            transition:
+                color 0.2s;
         }
 
         .form-footer-links a:hover {
             color: var(--primary);
-            text-decoration: underline;
+
+            text-decoration:
+                underline;
         }
 
-        /* --- MISS CODERS SHOWCASE SECTION --- */
+        /* ================================
+           LOGIN MESSAGE
+        ================================= */
+
+        #loginMessage {
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            font-size: 0.85rem;
+
+            line-height: 1.4;
+        }
+
+        #loginMessage.error {
+            display: block;
+
+            color: #fecaca;
+
+            background:
+                rgba(239, 68, 68, 0.12);
+
+            border:
+                1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        #loginMessage.success {
+            display: block;
+
+            color: #bbf7d0;
+
+            background:
+                rgba(34, 197, 94, 0.12);
+
+            border:
+                1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        /* ================================
+           MISS CODERS
+        ================================= */
+
         .winners-section {
             padding: 80px 8%;
-            background: rgba(2, 6, 23, 0.7);
-            border-top: 1px solid var(--glass-border);
-            border-bottom: 1px solid var(--glass-border);
+
+            background:
+                rgba(2, 6, 23, 0.7);
+
+            border-top:
+                1px solid var(--glass-border);
+
+            border-bottom:
+                1px solid var(--glass-border);
+
             z-index: 2;
         }
 
         .winners-container {
             max-width: 1000px;
+
             margin: 0 auto;
+
             text-align: center;
         }
 
         .winners-badge {
             display: inline-block;
-            background: rgba(236, 72, 153, 0.15);
+
+            background:
+                rgba(236, 72, 153, 0.15);
+
             color: #f472b6;
-            border: 1px solid rgba(236, 72, 153, 0.3);
+
+            border:
+                1px solid
+                rgba(236, 72, 153, 0.3);
+
             padding: 6px 18px;
+
             border-radius: 20px;
+
             font-size: 0.85rem;
+
             font-weight: 700;
+
             letter-spacing: 1.5px;
+
             margin-bottom: 15px;
+
             text-transform: uppercase;
         }
 
         .winners-title {
             font-size: 2.4rem;
+
             font-weight: 800;
+
             color: #ffffff;
-            margin: 0 0 10px 0;
+
+            margin:
+                0 0 10px 0;
         }
 
         .winners-subtitle {
             color: var(--text-muted);
+
             font-size: 1rem;
-            margin: 0 0 40px 0;
+
+            margin:
+                0 0 40px 0;
+
+            line-height: 1.6;
         }
 
         .winners-card {
             background: var(--card-bg);
+
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+
+            border:
+                1px solid var(--glass-border);
+
             border-radius: 24px;
+
             overflow: hidden;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, border-color 0.3s ease;
+
+            box-shadow:
+                0 20px 40px -10px
+                rgba(0, 0, 0, 0.5);
+
+            transition:
+                transform 0.3s ease,
+                border-color 0.3s ease;
         }
 
         .winners-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(236, 72, 153, 0.3);
+            transform:
+                translateY(-5px);
+
+            border-color:
+                rgba(236, 72, 153, 0.3);
         }
 
         .winners-image-wrapper {
             width: 100%;
+
             max-height: 480px;
+
             overflow: hidden;
+
             position: relative;
         }
 
         .winners-img {
             width: 100%;
+
             height: 100%;
+
+            max-height: 480px;
+
             object-fit: cover;
+
             display: block;
         }
 
         .winners-content {
             padding: 30px;
+
             text-align: left;
         }
 
         .winners-content h3 {
             color: #f472b6;
+
             font-size: 1.5rem;
-            margin: 0 0 8px 0;
+
+            margin:
+                0 0 8px 0;
         }
 
         .winners-content p {
             color: var(--text-muted);
+
             font-size: 0.98rem;
+
             margin: 0;
+
             line-height: 1.6;
         }
 
-        /* --- RESPONSIVE BREAKPOINTS --- */
-        @media (max-width: 968px) {
-            .main-container { 
-              grid-template-columns: 1fr; 
-              padding: 40px 5%; 
-              text-align: center; 
-          }
-          .hero-content p { margin-inline: auto; }
-          .stats-container { justify-content: center; }
-          h1 { font-size: 3rem; }
-          .winners-section { padding: 60px 5%; }
-          .winners-title { font-size: 1.8rem; }
+        /* ================================
+           FOOTER
+        ================================= */
+
+        footer {
+            padding: 25px 8%;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            font-size: 0.8rem;
+
+            border-top:
+                1px solid var(--glass-border);
+
+            z-index: 2;
         }
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media (max-width: 968px) {
+
+            .main-container {
+                grid-template-columns: 1fr;
+
+                padding:
+                    40px 5%;
+
+                text-align: center;
+            }
+
+            .hero-content p {
+                margin-inline:
+                    auto;
+            }
+
+            .stats-container {
+                justify-content:
+                    center;
+            }
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            .winners-section {
+                padding:
+                    60px 5%;
+            }
+
+            .winners-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            nav {
+                padding:
+                    1rem 5%;
+            }
+
+            .logo {
+                font-size:
+                    1rem;
+            }
+
+            .logo-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .admin-link {
+                font-size:
+                    0.75rem;
+
+                padding:
+                    7px 10px;
+            }
+
+            h1 {
+                font-size:
+                    2.5rem;
+            }
+
+            .hero-content p {
+                font-size:
+                    1rem;
+            }
+
+            .stats-container {
+                gap: 15px;
+            }
+
+            .login-card {
+                padding:
+                    28px 20px;
+
+                border-radius:
+                    24px;
+            }
+
+            .login-card h2 {
+                font-size:
+                    1.6rem;
+            }
+
+            .form-footer-links {
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
+                text-align:
+                    center;
+            }
+
+            .winners-content {
+                padding:
+                    22px;
+            }
+        }
+
     </style>
+
 </head>
+
 <body>
 
     <div class="mesh"></div>
 
-    <!-- Navigation -->
+    <!-- ================================
+         NAVIGATION
+    ================================= -->
+
     <nav>
+
         <div class="logo">
+
             <div class="logo-icon"></div>
+
             TEST MY CODE
+
         </div>
-        <a href="adminlogin.html" class="admin-link">Faculty Access</a>
+
+        <a href="adminlogin.html"
+           class="admin-link">
+
+            Faculty Access
+
+        </a>
+
     </nav>
 
-    <!-- Main Hero Section -->
+
+    <!-- ================================
+         MAIN HERO
+    ================================= -->
+
     <main class="main-container">
+
         <section class="hero-content">
-            <h1>Solve. Build.<br><span class="highlight">Optimize.</span></h1>
-            <p>A professional-grade assessment environment designed for the modern developer. Experience zero-latency execution and real-time analytics.</p>
-            
+
+            <h1>
+                Solve. Build.<br>
+                <span class="highlight">
+                    Optimize.
+                </span>
+            </h1>
+
+            <p>
+                A professional online coding assessment
+                environment designed for students and
+                developers. Practice and evaluate your
+                programming skills in C, C++, Java and Python.
+            </p>
+
             <div class="stats-container">
+
                 <div class="stat-item">
+
                     <h4>1.2k+</h4>
-                    <span>Active Users</span>
+
+                    <span>
+                        Active Users
+                    </span>
+
                 </div>
+
                 <div class="stat-item">
+
                     <h4>&lt;50ms</h4>
-                    <span>Latency</span>
+
+                    <span>
+                        Target Latency
+                    </span>
+
                 </div>
+
                 <div class="stat-item">
+
                     <h4>99.9%</h4>
-                    <span>Reliability</span>
+
+                    <span>
+                        Reliability
+                    </span>
+
                 </div>
+
             </div>
+
         </section>
 
-        <!-- Login Card -->
+
+        <!-- ================================
+             LOGIN CARD
+        ================================= -->
+
         <section class="login-card">
-            <h2>Candidate Login</h2>
-            <p style="color: var(--text-muted)">Please authenticate to proceed to the terminal.</p>
-            
-            <form id="loginForm">
+
+            <h2>
+                Candidate Login
+            </h2>
+
+            <p class="login-card-description">
+                Please authenticate to continue
+                to your student dashboard.
+            </p>
+
+
+            <form id="loginForm"
+                  onsubmit="login(event)">
+
                 <div class="input-group">
-                    <label for="studentId">Student ID</label>
-                    <input type="text" id="studentId" placeholder="SUC Number" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
+
+                    <label for="studentId">
+                        Student ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="studentId"
+                        name="studentId"
+                        placeholder="SUC Number"
+                        autocomplete="username"
+                        required>
+
                 </div>
 
-                <button type="button" onclick="login()" class="btn-primary">Initialize Session</button>
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                        required>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="btn-primary">
+
+                    Initialize Session
+
+                </button>
+
+
+                <div
+                    id="loginMessage"
+                    role="alert">
+                </div>
+
 
                 <div class="form-footer-links">
-                    <a href="forgot-password.html">Forgot Password?</a>
-                    <a href="register.html">Don't have an account? Sign up</a>
+
+                    <a href="forgot-password.html">
+                        Forgot Password?
+                    </a>
+
+                    <a href="register.html">
+                        Don't have an account?
+                        Sign up
+                    </a>
+
                 </div>
+
             </form>
+
         </section>
+
     </main>
 
-    <!-- Miss Coders Showcase Section -->
+
+    <!-- ================================
+         MISS CODERS SHOWCASE
+    ================================= -->
+
     <section class="winners-section">
+
         <div class="winners-container">
-            <div class="winners-badge">👑 LAST WEEK MISS CODERS WINNERS</div>
-            <h2 class="winners-title">Celebrating Our Top Female Coders</h2>
-            <p class="winners-subtitle">Honoring excellence, speed, and analytical precision in last week's Miss Coders hackathon & assessment.</p>
-            
+
+            <div class="winners-badge">
+                👑 LAST WEEK MISS CODERS WINNERS
+            </div>
+
+            <h2 class="winners-title">
+                Celebrating Our Top Female Coders
+            </h2>
+
+            <p class="winners-subtitle">
+                Honoring excellence, speed, and analytical
+                precision in last week's Miss Coders
+                hackathon & assessment.
+            </p>
+
+
             <article class="winners-card">
+
                 <div class="winners-image-wrapper">
-                    <img src="images/coder.jpg" alt="Miss Coders Event Winners" class="winners-img" loading="lazy">
+
+                    <img
+                        src="images/mcoder.jpeg"
+                        alt="Miss Coders Event Winners"
+                        class="winners-img"
+                        loading="lazy"
+                        decoding="async">
+
                 </div>
+
+
                 <div class="winners-content">
-                    <h3>Miss Coders Assessment Champions</h3>
-                    <p>Kudos to all participants and top rankers who showcased incredible problem-solving ability, speed, and clean code optimization in last week's event!</p>
+
+                    <h3>
+                        Miss Coders Assessment Champions
+                    </h3>
+
+                    <p>
+                        Kudos to all participants and top
+                        rankers who showcased incredible
+                        problem-solving ability, speed,
+                        and clean code optimization in
+                        last week's event!
+                    </p>
+
                 </div>
+
             </article>
+
         </div>
+
     </section>
 
+
+    <!-- ================================
+         FOOTER
+    ================================= -->
+
+    <footer>
+
+        © 2026 Test My Code.
+        Online Coding Assessment Platform.
+
+    </footer>
+
+
+    <!-- ================================
+         LOGIN SCRIPT
+    ================================= -->
+
     <script>
-        function login() {
-            const id = document.getElementById("studentId").value;
-            const pass = document.getElementById("password").value;
+
+        async function login(event) {
+
+            /*
+             * Prevent normal form submission.
+             */
+            if (event) {
+                event.preventDefault();
+            }
+
+
+            const id =
+                document
+                    .getElementById("studentId")
+                    .value
+                    .trim();
+
+            const pass =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+            const loginMessage =
+                document.getElementById("loginMessage");
+
+
+            /*
+             * Clear previous message.
+             */
+
+            loginMessage.className = "";
+            loginMessage.textContent = "";
+
+
+            /*
+             * Validate input.
+             */
 
             if (!id || !pass) {
-                alert("Student ID and Password are required to initialize session.");
+
+                loginMessage.textContent =
+                    "Student ID and Password are required.";
+
+                loginMessage.className =
+                    "error";
+
                 return;
             }
 
-            fetch("/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    studentId: id, 
-                    password: pass 
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Passes student name back if returned by server backend, fallback to ID
-                    const studentName = data.studentName || id;
-                    window.location.href = `exam.html?id=${id}&user=${encodeURIComponent(studentName)}`;
-                } else {
-                    alert(data.message || "Authentication Error: Invalid credentials.");
+
+            /*
+             * Disable button while
+             * authentication is running.
+             */
+
+            loginButton.disabled = true;
+
+            loginButton.textContent =
+                "Authenticating...";
+
+
+            try {
+
+                const response =
+                    await fetch("/login", {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            studentId: id,
+
+                            password: pass
+
+                        })
+
+                    });
+
+
+                /*
+                 * Try to read JSON response.
+                 */
+
+                let data;
+
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch (jsonError) {
+
+                    throw new Error(
+                        "Invalid server response."
+                    );
+
                 }
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("Connectivity issue detected. Terminal unreachable.");
-            });
+
+
+                /*
+                 * Login failed.
+                 */
+
+                if (!response.ok || !data.success) {
+
+                    loginMessage.textContent =
+                        data.message ||
+                        "Authentication failed. Please check your Student ID and password.";
+
+                    loginMessage.className =
+                        "error";
+
+                    loginButton.disabled = false;
+
+                    loginButton.textContent =
+                        "Initialize Session";
+
+                    return;
+                }
+
+
+                /*
+                 * Login successful.
+                 */
+
+                const studentName =
+                    data.studentName || id;
+
+
+                loginMessage.textContent =
+                    "Login successful. Opening student dashboard...";
+
+                loginMessage.className =
+                    "success";
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * Student is now redirected to
+                 * student-dashboard.html
+                 *
+                 * Student ID and name are passed
+                 * through the URL.
+                 */
+
+                const dashboardUrl =
+                    "student-dashboard.html?id="
+                    + encodeURIComponent(id)
+                    + "&user="
+                    + encodeURIComponent(studentName);
+
+
+                loginButton.textContent =
+                    "Opening Dashboard...";
+
+
+                /*
+                 * Small delay so the user can see
+                 * the successful login message.
+                 */
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        dashboardUrl;
+
+                }, 500);
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Login Error:",
+                    error
+                );
+
+
+                loginMessage.textContent =
+                    "Connectivity issue detected. Unable to reach the server.";
+
+                loginMessage.className =
+                    "error";
+
+
+                loginButton.disabled = false;
+
+                loginButton.textContent =
+                    "Initialize Session";
+
+            }
+
         }
+
     </script>
+
 </body>
+
 </html>
+```
